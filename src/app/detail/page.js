@@ -5,7 +5,7 @@ export default function DetailPage() {
   //tasarım yapmadım ancak direkt olarak yansıtıyor şu anda. çok fazla detay gelmediği için az gösterdi. 
   const searchParams = useSearchParams();
   const title = searchParams.get("title");
-  const description = searchParams.get("description");
+  const description = searchParams.get("content");
 
   return (
     <div className="container mx-auto px-4 py-8">
