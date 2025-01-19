@@ -29,9 +29,11 @@ export const AcmeLogo = () => {
 
 export default function Home() {
   const [articles, setArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllArticles, setShowAllArticles] = useState(false);
   const [showAllWriter, setShowAllWriter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const sliderRef = useRef(null);
   const authors = [
@@ -68,6 +70,7 @@ export default function Home() {
         const data = await response.json();
         if (data.data) {
           setArticles(data.data);
+          setFilteredArticles(data.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -76,6 +79,19 @@ export default function Home() {
 
     fetchNewsData();
   }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredArticles(articles);
+    } else {
+      setFilteredArticles(
+        articles.filter((article) =>
+          article.title.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+    }
+  };
 
   const sliderSettings = {
     dots: false,
@@ -198,17 +214,29 @@ export default function Home() {
 
 
       <div className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="bg-white rounded-md shadow-md py-6 px-4">
-          <h2 className="text-3xl font-bold text-blue-900 border-b-2 border-blue-900 pb-2 mb-6">
-            Son Haberler
-          </h2>
+        <div className="bg-white rounded-md shadow-md py-6 px-4 relative">
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold text-blue-900 border-b-2 border-blue-900 pb-2 mb-6">
+              Son Haberler
+            </h2>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Haber Ara..."
+                className="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
           <div
             className={`grid gap-6 ${showAllArticles
               ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-h-[600px] overflow-hidden"
               }`}
           >
-            {articles.slice(0, showAllArticles ? articles.length : 6).map(
+            {filteredArticles.slice(0, showAllArticles ? filteredArticles.length : 6).map( 
               (item, index) => (
                 <Card key={index} className="relative">
                   <div className="w-full h-48">
@@ -256,6 +284,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+
 
       <div className="max-w-7xl mx-auto px-4 pb-12">
         <div className="bg-white rounded-md shadow-md py-6 px-4">
