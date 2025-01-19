@@ -13,7 +13,6 @@ import {
   User
 } from "@nextui-org/react";
 import { Card, CardFooter, Image as NextUIImage } from "@nextui-org/react";
-import { CircularProgress } from "@heroui/react";
 
 export const AcmeLogo = () => {
   return (
@@ -30,7 +29,6 @@ export const AcmeLogo = () => {
 
 export default function Home() {
   const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllArticles, setShowAllArticles] = useState(false);
   const [showAllWriter, setShowAllWriter] = useState(false);
@@ -73,8 +71,6 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false); 
       }
     };
 
@@ -95,19 +91,6 @@ export default function Home() {
       setCurrentSlide(newIndex);
     },
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <CircularProgress
-          aria-label="Loading..."
-          color="primary"
-          size="lg"
-          value={50}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans">
@@ -143,14 +126,6 @@ export default function Home() {
                 icon={
                   <span className="material-icons text-white">notifications</span>
                 }
-              />
-            </NavbarItem>
-            <NavbarItem>
-              <Avatar
-                size="md"
-                src="https://via.placeholder.com/40"
-                alt="User Avatar"
-                className="ring-2 ring-white"
               />
             </NavbarItem>
           </NavbarContent>
@@ -190,6 +165,9 @@ export default function Home() {
                       article.title
                     )}&content=${encodeURIComponent(
                       article.content || "Açıklama bulunamadı"
+                    )}&image=${encodeURIComponent(
+                      article.media_url ||
+                      "https://via.placeholder.com/800x400?text=No+Image"
                     )}`}
                     className="text-white underline font-medium"
                   >
@@ -218,6 +196,7 @@ export default function Home() {
         </div>
       </div>
 
+
       <div className="max-w-7xl mx-auto px-4 pb-12">
         <div className="bg-white rounded-md shadow-md py-6 px-4">
           <h2 className="text-3xl font-bold text-blue-900 border-b-2 border-blue-900 pb-2 mb-6">
@@ -232,16 +211,18 @@ export default function Home() {
             {articles.slice(0, showAllArticles ? articles.length : 6).map(
               (item, index) => (
                 <Card key={index} className="relative">
-                  <NextUIImage
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                    src={
-                      item.media_url ||
-                      "https://via.placeholder.com/300x200?text=No+Image"
-                    }
-                  />
-                  <CardFooter className="absolute bottom-0 z-10 bg-black/40 text-white backdrop-blur-md flex justify-between items-center p-4">
-                    <div className="pr-2 text-sm truncate">
+                  <div className="w-full h-48">
+                    <img
+                      src={
+                        item.media_url ||
+                        "https://via.placeholder.com/300x200?text=No+Image"
+                      }
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardFooter className="absolute bottom-0 z-10 bg-black/70 text-white backdrop-blur-md flex justify-between items-center p-3 rounded-b-md">
+                    <div className="text-xs md:text-sm truncate max-w-[70%] flex-shrink">
                       {item.title || "Açıklama bulunamadı"}
                     </div>
                     <Button
@@ -250,12 +231,15 @@ export default function Home() {
                         item.title
                       )}&content=${encodeURIComponent(
                         item.content || "Açıklama bulunamadı"
+                      )}&image=${encodeURIComponent(
+                        item.media_url ||
+                        "https://via.placeholder.com/300x200?text=No+Image"
                       )}`}
                       size="sm"
                       radius="full"
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-xs font-medium flex-shrink-0"
                     >
-                      Oku
+                      Devamını Oku
                     </Button>
                   </CardFooter>
                 </Card>
@@ -265,7 +249,7 @@ export default function Home() {
           <div className="flex justify-center mt-6">
             <Button
               onClick={() => setShowAllArticles(!showAllArticles)}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md font-semibold"
             >
               {showAllArticles ? "Daralt" : "Genişlet"}
             </Button>
@@ -299,9 +283,9 @@ export default function Home() {
           <div className="flex justify-center mt-6">
             <Button
               onClick={() => setShowAllWriter(!showAllWriter)}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md font-semibold"
             >
-              {showAllWriter ? "Daralt" : "Genişlet"}
+              {showAllArticles ? "Daralt" : "Genişlet"}
             </Button>
           </div>
         </div>
